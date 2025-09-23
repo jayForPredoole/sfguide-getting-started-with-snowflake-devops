@@ -112,7 +112,7 @@ pipeline = [
         select 
             departure_airport, 
             arrival_airport, 
-            get_city_for_airport(arrival_airport) arrival_city,  
+            quickstart_prod.silver.get_city_for_airport(arrival_airport) arrival_city,  
             co2_emissions_kg_per_person, 
             punctual_pct,
         from flight_emissions
@@ -231,15 +231,51 @@ pipeline = [
         group by city.geo_id, city.geo_name, city.total_population
         """,
     ),
-    # Placeholder: Add new view definition here
+    View(
+    name="attractions",
+    columns=[
+        ViewColumn(name="geo_id"),
+        ViewColumn(name="geo_name"),
+        ViewColumn(name="aquarium_cnt"),
+        ViewColumn(name="zoo_cnt"),
+        ViewColumn(name="korean_restaurant_cnt"),
+    ],
+    query="""
+    select
+        city.geo_id,
+             city.geo_name,
+        count(case when category_main = 'Aquarium' THEN 1 END) aquarium_cnt,
+        count(case when category_main = 'Zoo' THEN 1 END) zoo_cnt,
+        count(case when category_main = 'Korean Restaurant' THEN 1 END) korean_restaurant_cnt,
+    from us_addresses__poi.cybersyn.point_of_interest_index poi
+    join us_addresses__poi.cybersyn.point_of_interest_addresses_relationships poi_add 
+        on poi_add.poi_id = poi.poi_id
+    join us_addresses__poi.cybersyn.us_addresses address 
+        on address.address_id = poi_add.address_id
+    join major_us_cities city on city.geo_id = address.id_city
+    where true
+        and category_main in ('Aquarium', 'Zoo', 'Korean Restaurant')
+        and id_country = 'country/USA'
+    group by city.geo_id, city.geo_name
+    """,
+),
 ]
 
-
+connection_parameters = {
+         "user": "USER1",
+         "password": "Predoole@20250311",
+         "account": "hapeljg-job29427",
+         "role": "ACCOUNTADMIN",
+         "warehouse": "COMPUTE_WH",
+         "database": "quickstart_prod",
+         "schema": "SILVER"
+     }
+session = Root(Session.builder.configs(connection_parameters).create())
 # entry point for PythonAPI
-root = Root(Session.builder.getOrCreate())
+#root = Root(session)
 
 # create views in Snowflake
-silver_schema = root.databases["quickstart_prod"].schemas["silver"]
+silver_schema = session.databases["quickstart_prod"].schemas["silver"]
 silver_schema.user_defined_functions.create(
     map_city_to_airport, mode=CreateMode.or_replace
 )

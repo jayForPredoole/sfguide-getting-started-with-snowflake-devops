@@ -16,7 +16,7 @@ View(
     query="""
     select
         city.geo_id,
-        city.geo_name,
+             city.geo_name,
         count(case when category_main = 'Aquarium' THEN 1 END) aquarium_cnt,
         count(case when category_main = 'Zoo' THEN 1 END) zoo_cnt,
         count(case when category_main = 'Korean Restaurant' THEN 1 END) korean_restaurant_cnt,
