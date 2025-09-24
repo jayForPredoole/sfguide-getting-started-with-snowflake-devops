@@ -46,7 +46,9 @@ jobs:
 
       #Debug Step
       - name: Set schema explicitly
-        run:  snow sql -q "USE SCHEMA PUBLIC;"
+        run:  |
+          snow sql -q "USE SCHEMA PUBLIC;"
+          snow config set default.schema=PUBLIC
 
       # Deploy pipeline with branch specific parameters
       - name: Deploy data pipeline to ${{ github.ref_name }}
