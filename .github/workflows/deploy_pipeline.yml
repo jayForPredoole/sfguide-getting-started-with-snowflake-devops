@@ -45,8 +45,8 @@ jobs:
         run: snow git fetch "${REPO_NAME}"
 
       #Debug Step
-      - name: Debugging
-        run:  snow sql -q "SELECT CURRENT_DATABASE(), CURRENT_SCHEMA(), CURRENT_ROLE();"
+      - name: Set schema explicitly
+        run:  snow sql -q "USE SCHEMA PUBLIC;"
 
       # Deploy pipeline with branch specific parameters
       - name: Deploy data pipeline to ${{ github.ref_name }}
