@@ -6,7 +6,7 @@ CREATE OR ALTER WAREHOUSE QUICKSTART_WH
   AUTO_RESUME= TRUE;
 
 
--- Separate database for git repository
+-- Separate database for h/repository
 CREATE OR ALTER DATABASE QUICKSTART_{{environment}}; 
 
 

@@ -44,10 +44,6 @@ jobs:
       - name: Fetch repository changes
         run: snow git fetch "${REPO_NAME}"
 
-      #Change file permissions
-      - name: Change file permissions
-        run: chmod 600 .snowflake/config.toml
-
       #Debug Current Schema:
       - name: Search repo for DEMO_DB_DEV references
         run: |
@@ -63,7 +59,7 @@ jobs:
           else
             RETENTION_TIME=0
           fi
-          snow --config-file .snowflake/config.toml git execute \
+          snow git execute \
             "@${REPO_NAME}/branches/${BRANCH_NAME}/steps/0[134]_*" \
             -D "environment='${BRANCH_NAME}'" \
             -D "retention_time=${RETENTION_TIME}"
