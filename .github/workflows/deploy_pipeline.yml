@@ -49,9 +49,10 @@ jobs:
         run: chmod 600 .snowflake/config.toml
 
       #Debug Current Schema:
-      - name: Debug current schema
-        run: snow sql -q "SELECT CURRENT_DATABASE(), CURRENT_SCHEMA();"
-
+      - name: Search repo for DEMO_DB_DEV references
+        run: |
+          echo "🔍 Searching for DEMO_DB_DEV in SQL files..."
+          grep -R --line-number --color=always "DEMO_DB_DEV" .
 
       # Deploy pipeline with branch specific parameters
       - name: Deploy data pipeline to ${{ github.ref_name }}
