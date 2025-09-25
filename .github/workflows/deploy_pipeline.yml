@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     env:
-      REPO_NAME: QUICKSTART_COMMON.PUBLIC.QUICKSTART_REPO
+      REPO_NAME: "QUICKSTART_COMMON.PUBLIC.QUICKSTART_REPO"
       SNOWFLAKE_CONNECTIONS_DEFAULT_AUTHENTICATOR: "SNOWFLAKE_JWT"
       SNOWFLAKE_CONNECTIONS_DEFAULT_PRIVATE_KEY_FILE: ".snowflake/snowflake_rsa_key"
       # Read connection secrets
@@ -44,12 +44,6 @@ jobs:
       - name: Fetch repository changes
         run: snow git fetch "${REPO_NAME}"
 
-      #Debug Step
-      - name: Set schema explicitly
-        run:  |
-          snow sql -q "USE DATABASE QUICKSTART_COMMON;"
-          snow sql -q "USE SCHEMA PUBLIC;"
-
       # Deploy pipeline with branch specific parameters
       - name: Deploy data pipeline to ${{ github.ref_name }}
         run: |
@@ -59,6 +53,7 @@ jobs:
           else
             RETENTION_TIME=0
           fi
+          snow sql -q "USE DATABASE QUICKSTART_COMMON; USE SCHEMA PUBLIC;"
           snow git execute \
             "@${REPO_NAME}/branches/${BRANCH_NAME}/steps/0[134]_*" \
             -D "environment='${BRANCH_NAME}'" \
